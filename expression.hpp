@@ -27,7 +27,7 @@ namespace CalculatorPolish
          */
         void setOperation(const Operation *operation);
         /**
-         * @brief get result of the evaluated expression
+         * @brief get result of the expression. evaluate() shall be called for proper result
          * @return result of the expression
          */
         const double getResult();

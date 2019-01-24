@@ -26,7 +26,6 @@ void CalculatorPolish::Expression::setOperation(const Operation* operation)
 
 const double CalculatorPolish::Expression::getResult()
 {
-    evaluate();
     return result;
 }
 
