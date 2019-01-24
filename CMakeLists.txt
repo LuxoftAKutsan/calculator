@@ -11,7 +11,8 @@ add_executable(calculator_test calculator_test.cc
                                plus.cc
                                minus.cc
                                multiply.cc
-                               divide.cc)
+                               divide.cc
+                               operation_factory.cc)
 
 target_link_libraries(calculator_test gtest gmock_main)
 add_test(NAME calculator_test COMMAND test)

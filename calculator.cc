@@ -9,14 +9,15 @@
 #include "minus.hpp"
 #include "multiply.hpp"
 #include "divide.hpp"
+#include "operation_factory.hpp"
 
 namespace CalculatorPolish
 {
 
 
     bool Calculator::CheckNum(const std::string& token) {
-      auto it = token.find_last_not_of("1234567890+-.");
-      return it == std::string::npos;
+        auto it = token.find_last_not_of("1234567890+-.");
+        return it == std::string::npos;
     }
 
     double Calculator::calculate(const std::string& expression)
@@ -32,35 +33,13 @@ namespace CalculatorPolish
             bool num = CheckNum(std::string(token));
             if(firstFilled && secondFilled)
             {
-                switch(token[firstChar])
-                {
-                case '+':
-                    current.setOperation(new Plus());
-                    secondFilled = false;
-                    break;
-                case '-':
-                    current.setOperation(new Minus());
-                    secondFilled = false;
-                    break;
-                case '*':
-                    current.setOperation(new Multiply());
-                    secondFilled = false;
-                    break;
-                case '/':
-                    current.setOperation(new Divide());
-                    secondFilled = false;
-                    break;
-                default:
-                    delete exp;
-                    throw std::invalid_argument("Wrong operand");
-                }
-
+                current.setOperation(OperationFactory::defineOperation(token[firstChar]));
+                secondFilled = false;
                 current.setFirst(current.evaluate());
                 continue;
             }
             if(num)
             {
-                printf("%s\n", token);
                 auto numtok = strtod(token, nullptr);
                 if(!firstFilled)
                 {
