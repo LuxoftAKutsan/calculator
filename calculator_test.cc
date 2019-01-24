@@ -1,229 +1,88 @@
 #include <gtest/gtest.h>
-#include <limits>
-#include "calculator.hpp"
+#include "calculator.h"
 
-TEST(Calculator_Polish, Plus)
+TEST(Calculator, Plus)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8 2 +";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 10.);
+    double result = calculate("5 5 +").second;
+    EXPECT_DOUBLE_EQ(result, 10.0);
 }
 
-TEST(Calculator_Polish, Minus)
+TEST(Calculator, Minus)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8 2 -";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 6.);
+    double result = calculate("10 5 -").second;
+    EXPECT_DOUBLE_EQ(result, 5.0);
 }
 
-TEST(Calculator_Polish, Multiply)
+TEST(Calculator, Divide)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8 2 *";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 16.);
+    double result = calculate("10 5 /").second;
+    EXPECT_DOUBLE_EQ(result, 2.0);
 }
 
-TEST(Calculator_Polish, Divide)
+TEST(Calculator, Multiply)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8 2 /";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 4.);
+    double result = calculate("10 5 *").second;
+    EXPECT_DOUBLE_EQ(result, 50.0);
 }
 
-TEST(Calculator_Polish, NegativePlus)
+TEST(Calculator, LongNotation)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "-8 2 +";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, -6.);
+    double result = calculate("2 4 + 5 * 2 /").second;
+    EXPECT_DOUBLE_EQ(result, 15);
 }
 
-TEST(Calculator_Polish, NegativeMinus)
+TEST(Calculator, DivideByZero)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "-8 2 -";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, -10.);
+    tResultType result = calculate("2 4 + 5 * 0 /").first;
+    EXPECT_EQ(false, result);
 }
 
-TEST(Calculator_Polish, NegativeMultiply)
+TEST(Calculator, WrongOrder)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "-8 2 *";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, -16.);
+    tResultType result = calculate("+ 2 4 + 5").first;
+    EXPECT_EQ(false, result);
 }
 
-TEST(Calculator_Polish, NegativeDivide)
+TEST(Calculator, RandomString)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "-8 2 /";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, -4.);
+    tResultType result = calculate("zysopejrl@(#@($#@38283482348282gzlsqwktyjghbp").first;
+    EXPECT_EQ(false, result);
 }
 
-TEST(Calculator_Polish, PlusToZero)
+TEST(Calculator, InvalidArguments)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "0 0 +";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 0.);
+    tResultType result = calculate("2 2 + 5 - zysopejrlgzlsqwktyjghbp").first;
+    EXPECT_EQ(false, result);
 }
 
-TEST(Calculator_Polish, MinusToZero)
+TEST(Calculator, ComplexExpr)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "5 5 -";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 0.);
+    double result = calculate("15 7 1 1 + - / 3 * 2 1 1 + + -").second;
+    EXPECT_DOUBLE_EQ(result, 5);
 }
 
-TEST(Calculator_Polish, MultiplyToZero)
+TEST(Calculator, WrongOperation)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "5 0 *";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 0.);
+    tResultType result = calculate("2 2 + 5 %").first;
+    EXPECT_EQ(false, result);
 }
 
-TEST(Calculator_Polish, DivideToZero)
+TEST(Calculator, EmptyString)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "0 2 /";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 0.);
+    tResultType result = calculate("").first;
+    EXPECT_EQ(false, result);
 }
 
-TEST(Calculator_Polish, IntDivideToDouble)
+TEST(Calculator, BigNumber)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "9 2 /";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 4.5);
+    double result = calculate("145 145 +").second;
+    EXPECT_DOUBLE_EQ(result, 290.0);
 }
 
-TEST(Calculator_Polish, DoublePlus)
+TEST(Calculator, NegativeNumber)
 {
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8.17 2.01 +";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 10.18);
+    double result = calculate("-145 146 +").second;
+    EXPECT_DOUBLE_EQ(result, 1.0);
 }
 
-TEST(Calculator_Polish, DoubleMinus)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8.17 2.01 -";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 6.16);
-}
-
-TEST(Calculator_Polish, DoubleMultiply)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8.17 2.01 *";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 16.4217);
-}
-
-TEST(Calculator_Polish, DoubleDivide)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8.17 2.01 /";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 4.064676616915423);
-}
-
-TEST(Calculator_Polish, DivideByZero)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "8 0 /";
-    ASSERT_THROW(worker.calculate(expression), std::overflow_error);
-}
-
-TEST(Calculator_Polish, MultipleOperands)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "5 3 + 7 * 2 /";
-    auto ret = worker.calculate(expression);
-    EXPECT_DOUBLE_EQ(ret, 28.);
-}
-
-TEST(Calculator_Polish, WrongInput)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "qwerty";
-    ASSERT_THROW(worker.calculate(expression), std::invalid_argument);
-}
-
-TEST(Calculator_Polish, EmptyInput)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "";
-    ASSERT_THROW(worker.calculate(expression), std::invalid_argument);
-}
-
-TEST(Calculator_Polish, SimpleWrongOperation)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "5 3 %";
-    ASSERT_THROW(worker.calculate(expression), std::invalid_argument);
-}
-
-TEST(Calculator_Polish, WrongOrder)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "+ 2 2";
-    ASSERT_THROW(worker.calculate(expression), std::invalid_argument);
-}
-
-TEST(Calculator_Polish, WrongOperands)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "2 2 + 2 2";
-    ASSERT_THROW(worker.calculate(expression), std::invalid_argument);
-}
-
-TEST(Calculator_Polish, WrongSymbols)
-{
-    CalculatorPolish::Calculator worker;
-    std::string expression = "2q 2w +e";
-    ASSERT_THROW(worker.calculate(expression), std::invalid_argument);
-}
-
-TEST(Calculator_Polish, NumericLimitsPlus)
-{
-    CalculatorPolish::Calculator worker;
-    std::numeric_limits<double> limit;
-    std::string expression = std::to_string(limit.max()) + " " + std::to_string(limit.max()) + " +";
-    ASSERT_THROW(worker.calculate(expression), std::overflow_error);
-}
-
-TEST(Calculator_Polish, NumericLimitsMinus)
-{
-    CalculatorPolish::Calculator worker;
-    std::numeric_limits<double> limit;
-    std::string expression = std::to_string(limit.min()) + " " + std::to_string(limit.min()) + " -";
-    ASSERT_THROW(worker.calculate(expression), std::overflow_error);
-}
-
-TEST(Calculator_Polish, NumericLimitsMultiply)
-{
-    CalculatorPolish::Calculator worker;
-    std::numeric_limits<double> limit;
-    std::string expression = std::to_string(limit.max()) + " " + std::to_string(limit.max()) + " *";
-    ASSERT_THROW(worker.calculate(expression), std::overflow_error);
-}
-
-/*TEST(Calculator_Polish, NumericLimitsDivide)
-{
-    CalculatorPolish::Calculator worker;
-    std::numeric_limits<double> limit;
-    std::string expression = std::to_string(limit.epsilon()) + " " + std::to_string(limit.max()) + " /";
-    printf("%s", expression.c_str());
-    ASSERT_THROW(worker.calculate(expression), std::overflow_error);
-}*/
+//numeric limits with + - / *

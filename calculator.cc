@@ -1,98 +1,84 @@
-#include "calculator.hpp"
+#include "calculator.h"
+
 #include <vector>
-#include <cstring>
-#include <cstdlib>
-#include <stdexcept>
-#include <cmath>
-#include "expression.hpp"
-#include "plus.hpp"
-#include "minus.hpp"
-#include "multiply.hpp"
-#include "divide.hpp"
+#include <string>
+#include <sstream>
+#include <iterator>
+#include <unordered_map>
+#include <functional>
+#include <stack>
+#include <cassert>
+#include <algorithm>
 
-namespace CalculatorPolish
+constexpr int OPERANDS_MIN_NUM = 2;
+
+auto invalidResult = []() -> std::pair<tResultType, double>
 {
+    return std::make_pair(false, 0.0);
+};
 
-    double Calculator::calculate(const std::string& expression)
+const std::unordered_map<std::string, std::function<double(double,double)>> OPERATIONS_MAP
+{
+    { "+", std::plus<double>() },
+    { "-", std::minus<double>() },
+    { "*", std::multiplies<double>() },
+    { "/", std::divides<double>() }
+};
+
+bool containsAnyLetter(const std::string& str)
+{
+    return std::any_of(str.cbegin(), str.cend(), [](char c) { return (::islower(c) || ::isupper(c)); });
+}
+
+bool containsOnlyDigits(const std::string& str)
+{
+    return std::all_of(str.cbegin(), str.cend(), [](char c) { return (::isdigit(c) || c == '-'); });
+}
+
+std::pair<tResultType, double> evalRPN(const std::vector<std::string>& tokens)
+{
+    std::stack<double> stack;
+
+    for (const auto& token : tokens)
     {
-        char* exp = new char[expression.length() + nullTerminatorLength];
-        strcpy(exp, expression.c_str());
-        char* token;
-        Expression current;
-        bool firstFilled = false;
-        bool secondFilled = false;
-        while(nullptr != (token = strtok(firstFilled ? nullptr : exp, " ")))
+        const auto& it = OPERATIONS_MAP.find(token);
+        if (it != OPERATIONS_MAP.end())
         {
-            bool num = true;
-            for(int i = firstChar; '\0' != token[i]; ++i)
+            if(stack.size() < OPERANDS_MIN_NUM)
             {
-                if((token[i] < '0' || token[i] > '9') && token[i] != '.' && token[i] != '+' && token[i] != '-' )
-                {
-                    num = false;
-                    break;
-                }
+                return invalidResult();
             }
-            if(firstFilled && secondFilled)
+            double rhs = stack.top(); stack.pop();
+            double lhs = stack.top(); stack.pop();
+            if(it->first == "/" && rhs == 0.0)
             {
-                switch(token[firstChar])
-                {
-                case '+':
-                    current.setOperation(new Plus());
-                    secondFilled = false;
-                    break;
-                case '-':
-                    current.setOperation(new Minus());
-                    secondFilled = false;
-                    break;
-                case '*':
-                    current.setOperation(new Multiply());
-                    secondFilled = false;
-                    break;
-                case '/':
-                    current.setOperation(new Divide());
-                    secondFilled = false;
-                    break;
-                default:
-                    delete exp;
-                    throw std::invalid_argument("Wrong operand");
-                }
-
-                current.setFirst(current.evaluate());
-                continue;
+                return invalidResult();
             }
-            if(num)
-            {
-                printf("%s\n", token);
-                auto numtok = strtod(token, nullptr);
-                if(!firstFilled)
-                {
-                    current.setFirst(numtok);
-                    firstFilled = true;
-                }
-                else
-                {
-                    current.setSecond(numtok);
-                    secondFilled = true;
-                }
-            }
-            if(!num && !(firstFilled && secondFilled))
-            {
-                delete exp;
-                throw std::invalid_argument("Wrong order");
-            }
+            stack.push(it->second(lhs, rhs));
         }
-        if(!firstFilled)
+        else
         {
-            delete exp;
-            throw std::invalid_argument("First argument not number");
+            if(!containsOnlyDigits(token))
+            {
+                return invalidResult();
+            }
+            stack.push(std::stoi(token));
         }
-        if(secondFilled)
-        {
-            delete exp;
-            throw std::invalid_argument("More operands than operations");
-        }
-        delete exp;
-        return current.getResult();
     }
 
+    assert(!stack.empty());
+    return std::make_pair(true, stack.top());
+}
+
+std::pair<tResultType,double> calculate(const std::string& evals)
+{
+    if (evals.empty() || containsAnyLetter(evals))
+    {
+        return invalidResult();
+    }
+
+    std::istringstream iss{evals};
+    std::vector<std::string> strippedString(std::istream_iterator<std::string>{iss},
+                                            std::istream_iterator<std::string>{});
+    return evalRPN(strippedString);
 }
