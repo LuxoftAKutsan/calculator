@@ -16,6 +16,8 @@ namespace CalculatorPolish
          */
         double calculate(const std::string& expression);
 
+        bool CheckNum(const std::string& token);
+
     private:
         const static int nullTerminatorLength = 1;
         const static int firstChar = 0;

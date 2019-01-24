@@ -13,6 +13,12 @@
 namespace CalculatorPolish
 {
 
+
+    bool Calculator::CheckNum(const std::string& token) {
+      auto it = token.find_last_not_of("1234567890+-.");
+      return it == std::string::npos;
+    }
+
     double Calculator::calculate(const std::string& expression)
     {
         char* exp = new char[expression.length() + nullTerminatorLength];
@@ -23,15 +29,7 @@ namespace CalculatorPolish
         bool secondFilled = false;
         while(nullptr != (token = strtok(firstFilled ? nullptr : exp, " ")))
         {
-            bool num = true;
-            for(int i = firstChar; '\0' != token[i]; ++i)
-            {
-                if((token[i] < '0' || token[i] > '9') && token[i] != '.' && token[i] != '+' && token[i] != '-' )
-                {
-                    num = false;
-                    break;
-                }
-            }
+            bool num = CheckNum(std::string(token));
             if(firstFilled && secondFilled)
             {
                 switch(token[firstChar])
