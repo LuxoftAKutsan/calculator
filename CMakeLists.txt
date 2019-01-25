@@ -1,18 +1,7 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 2.8)
+project(calculator)
 set(CMAKE_CXX_STANDARD 11)
-project(calculator_polish)
 
-add_subdirectory(googletest)
+add_subdirectory(calculator)
+add_subdirectory(calculator_test)
 
-add_executable(calculator_test calculator_test.cc
-                               calculator.cc
-                               expression.cc
-                               operation.cc
-                               plus.cc
-                               minus.cc
-                               multiply.cc
-                               divide.cc
-                               operation_factory.cc)
-
-target_link_libraries(calculator_test gtest gmock_main)
-add_test(NAME calculator_test COMMAND test)
