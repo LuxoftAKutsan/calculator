@@ -24,12 +24,17 @@ std::deque<std::string> split( const std::string& str, char delim )
     return returnContainer;
 }
 
+inline bool isContainerValidForNextStep(const std::deque<std::string>& container )
+{
+    return ( ! container.empty() ) && ( 2 < container.size() );
+}
+
 double calculate( const std::string input )
 {
     auto container = split( input );
     sOperands operands;
     double result{ DBL_MAX };
-    while ( ( ! container.empty() ) && ( 2 < container.size() ) )
+    while ( true == isContainerValidForNextStep(container) )
     {
         try
         {
@@ -48,7 +53,7 @@ double calculate( const std::string input )
 struct sOperands extractItemsForOperation( std::deque<std::string>& container )
 {
     sOperands returnOperands;
-    if ( ( ! container.empty() ) && ( 2 < container.size() ) )
+    if ( true == isContainerValidForNextStep(container) )
     {
         try
         {
