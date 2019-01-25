@@ -4,8 +4,8 @@
 
 void OperationMinus::operate(std::stack<double> &operationStack)
 {
-    double op1 = NCalculatorHelper::popFromStack(operationStack);
-    double op2 = NCalculatorHelper::popFromStack(operationStack);
-    double result = op2 - op1;
+    double subtrahend = NCalculatorHelper::popFromStack(operationStack);
+    double minuend = NCalculatorHelper::popFromStack(operationStack);
+    double result = minuend - subtrahend;
     operationStack.push(result);
 }

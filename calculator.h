@@ -7,6 +7,8 @@
 #include "IOperation.h"
 #include <memory>
 
+//TODO: add functions' description
+
 using OperationPtr = std::shared_ptr<IOperation>;
 
 enum eCalculatorError

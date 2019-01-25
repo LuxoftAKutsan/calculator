@@ -4,14 +4,13 @@
 
 void OperationDivide::operate(std::stack<double> &operationStack)
 {
-    double op1 = NCalculatorHelper::popFromStack(operationStack);
-    double op2 = NCalculatorHelper::popFromStack(operationStack);
+    double divisor = NCalculatorHelper::popFromStack(operationStack);
+    double dividend = NCalculatorHelper::popFromStack(operationStack);
 
-    if (op1 == 0)
+    if (divisor == 0)
     {
-        //throw ERROR_DIVISION_BY_ZERO;
         throw DivisionByZeroException();
     }
-    double result = op2 / op1;
+    double result = dividend / divisor;
     operationStack.push(result);
 }

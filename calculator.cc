@@ -34,7 +34,7 @@ double calculate(const std::string &eval)
 stringVector splitString(const std::string& input, const char divider)
 {
     stringVector result;
-    std::string part = "";
+    std::string part;
     auto pushPart = [&part, &result]
     {
         result.push_back(part);
@@ -43,14 +43,7 @@ stringVector splitString(const std::string& input, const char divider)
 
     for (auto c: input)
     {
-        if (c != divider)
-        {
-            part += c;
-        }
-        else
-        {
-            pushPart();
-        }
+        c == divider ? pushPart() : part.push_back(c);
     }
     result.push_back(part);
 
@@ -70,12 +63,11 @@ void handleToken(std::stack<double> &stackToOperateOn, const std::string &token)
         auto operation = getOperation(token);
         operation->operate(stackToOperateOn);
     }
-    else if (isNumber(token))
+    if (isNumber(token))
     {
         double operand = std::stod(token);
         stackToOperateOn.push(operand);
     }
-    else{}
 }
 
 OperationPtr getOperation(const std::string &typeOfOperation)
@@ -94,7 +86,7 @@ bool isNumber(const std::string& token)
 {
     try
     {
-        double(std::stod(token));
+        std::stod(token);
         return true;
     }
     catch (std::exception)
@@ -105,10 +97,7 @@ bool isNumber(const std::string& token)
 
 bool isOperation(const std::string &token)
 {
-    return (token == "+") ||
-           (token == "-") ||
-           (token == "*") ||
-           (token == "/");
+    return token.find_last_not_of("+-*/") == std::string::npos;
 }
 
 void throwExceptionIfInvalidStack(const std::stack<double>& operationStack)
@@ -117,9 +106,8 @@ void throwExceptionIfInvalidStack(const std::stack<double>& operationStack)
     {
         throw ERROR_NO_OPERANDS;
     }
-    else if(operationStack.size() > 1)
+    if(operationStack.size() > 1)
     {
         throw ERROR_TOO_MUCH_OPERANDS;
     }
-    else{}
 }
