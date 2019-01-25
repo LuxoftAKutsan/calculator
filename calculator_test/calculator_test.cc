@@ -22,6 +22,11 @@ TEST(CalculatorHelperTest, CalculeteMultipleTestCase)
     EXPECT_DOUBLE_EQ(6, calculate("2 3 *").result);
 }
 
+TEST(CalculatorHelperTest, CalculeteMultipleMinuValueTestCase)
+{
+    EXPECT_DOUBLE_EQ(-6, calculate("-2 3 *").result);
+}
+
 TEST(CalculatorHelperTest, CalculeteDivideByZeroTestCase)
 {
     EXPECT_EQ(false, calculate("2 0 /").isValid) << "Divisio on null";

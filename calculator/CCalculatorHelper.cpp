@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdlib>
 #include <unordered_map>
+#include <algorithm>
 #include "CCalculatorHelper.hpp"
 
 // possible encapsulate error code and error msg into class
@@ -17,35 +18,33 @@
 
 namespace
 {
-    constexpr int LOW_BOUNDERES = 48;
-    constexpr int HIGH_BOUNDERES = 57;
+constexpr int LOW_BOUNDERES = 48;
+constexpr int HIGH_BOUNDERES = 57;
 }
 
 namespace mErrorCode
 {
-    using tErrorType = unsigned int;
+using tErrorType = unsigned int;
 
-    const tErrorType INVALID_STRING = 0;
-    const tErrorType DIVISION_WITH_ZERO = 1;
-    const tErrorType ENDEFINED_OPERATION = 2;
-    const tErrorType ENDEFINED = 3;
+const tErrorType INVALID_STRING = 0;
+const tErrorType DIVISION_WITH_ZERO = 1;
+const tErrorType ENDEFINED_OPERATION = 2;
+const tErrorType ENDEFINED = 3;
 }
 
 std::vector<std::string> split(const std::string &str, char separator)
 {
     std::vector<std::string> tokens;
 
-    if(!str.empty())
+    if(false == str.empty())
     {
-        //return error
-    }
+        std::string token;
+        std::istringstream tokenStream(str);
 
-    std::string token;
-    std::istringstream tokenStream(str);
-
-    while (std::getline(tokenStream, token, separator))
-    {
-        tokens.emplace_back(token);
+        while (std::getline(tokenStream, token, separator))
+        {
+            tokens.emplace_back(token);
+        }
     }
 
     return tokens;
@@ -106,11 +105,12 @@ FinishPackage<double> calculate(const std::string& eval)
 
 
     std::stack< double > valueStack;
+
+    auto isNumber = [](const std::string& value) ->bool { return std::any_of(value.cbegin(), value.cend(), isdigit); };
+
     for(const auto token : tokens)
     {
-        auto isNumber = [](char value){ return (int)value >= LOW_BOUNDERES && (int)value <= HIGH_BOUNDERES ; };
-
-        if( true == isNumber(token[0]) )
+        if( true == isNumber(token) )
         {
             valueStack.push( std::atof(token.c_str()) );
         }
@@ -126,7 +126,7 @@ FinishPackage<double> calculate(const std::string& eval)
 
                 try
                 {
-                     valueStack.push( processOperation(leftOpernd, rightOperand, token[0]) ) ;
+                    valueStack.push( processOperation(leftOpernd, rightOperand, token[0]) ) ;
                 }
                 catch(mErrorCode::tErrorType errorCode)
                 {

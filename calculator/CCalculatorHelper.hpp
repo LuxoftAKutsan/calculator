@@ -22,7 +22,7 @@ struct FinishPackage
         error = value;
     }
 
-//private:
+private:
     ERROR_TYPE error;
 
 };
