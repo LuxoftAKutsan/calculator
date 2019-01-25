@@ -57,7 +57,7 @@ double processOperation( const double& leftOperand, const double& rightOperand, 
     case '*' : return leftOperand * rightOperand;
     case '/' :
     {
-        if(0 == rightOperand || 0 == leftOperand)
+        if(0 == rightOperand)
         {
             throw mErrorCode::DIVISION_WITH_ZERO;
         }
@@ -95,8 +95,7 @@ FinishPackage<double> calculate(const std::string& eval)
 
     if(false == isExpressionValid(eval))
     {
-        result.isValid = false;
-        result.error = mErrorCode::INVALID_STRING;
+        result.setError(mErrorCode::INVALID_STRING);
         return result;
     }
 
@@ -126,8 +125,7 @@ FinishPackage<double> calculate(const std::string& eval)
                 }
                 catch(mErrorCode::tErrorType errorCode)
                 {
-                    result.isValid = false;
-                    result.error = errorCode;
+                    result.setError(errorCode);
 
                     return result;
                 }
