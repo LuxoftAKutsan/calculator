@@ -15,6 +15,12 @@
  *
  */
 
+namespace
+{
+    constexpr int LOW_BOUNDERES = 48;
+    constexpr int HIGH_BOUNDERES = 57;
+}
+
 namespace mErrorCode
 {
     using tErrorType = unsigned int;
@@ -29,23 +35,20 @@ std::vector<std::string> split(const std::string &str, char separator)
 {
     std::vector<std::string> tokens;
 
-    if(false == str.empty())
+    if(!str.empty())
     {
-        std::string token;
-        std::istringstream tokenStream(str);
+        //return error
+    }
 
-        while (std::getline(tokenStream, token, separator))
-        {
-            tokens.emplace_back(token);
-        }
+    std::string token;
+    std::istringstream tokenStream(str);
+
+    while (std::getline(tokenStream, token, separator))
+    {
+        tokens.emplace_back(token);
     }
 
     return tokens;
-}
-
-bool isNumber( const std::string& value )
-{
-    return value[0] >= 48 && value[0] <= 57 ; // ascii(48) = '0', ascii(57) = '0'
 }
 
 double processOperation( const double& leftOperand, const double& rightOperand, const char oper )
@@ -105,7 +108,9 @@ FinishPackage<double> calculate(const std::string& eval)
     std::stack< double > valueStack;
     for(const auto token : tokens)
     {
-        if( true == isNumber(token) )
+        auto isNumber = [&token](char value){ return (int)value >= LOW_BOUNDERES && (int)value <= HIGH_BOUNDERES ; };
+
+        if( true == isNumber(token[0]) )
         {
             valueStack.push( std::atof(token.c_str()) );
         }

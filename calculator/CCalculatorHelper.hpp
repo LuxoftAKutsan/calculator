@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+
 template<class RESULT_TYPE, class ERROR_TYPE = unsigned int>
 struct FinishPackage
 {
@@ -21,8 +22,9 @@ struct FinishPackage
         error = value;
     }
 
-private:
+//private:
     ERROR_TYPE error;
+
 };
 
 std::vector<std::string> split(const std::string& str, char separator);
