@@ -108,7 +108,7 @@ FinishPackage<double> calculate(const std::string& eval)
     std::stack< double > valueStack;
     for(const auto token : tokens)
     {
-        auto isNumber = [&token](char value){ return (int)value >= LOW_BOUNDERES && (int)value <= HIGH_BOUNDERES ; };
+        auto isNumber = [](char value){ return (int)value >= LOW_BOUNDERES && (int)value <= HIGH_BOUNDERES ; };
 
         if( true == isNumber(token[0]) )
         {
