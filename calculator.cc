@@ -1,98 +1,102 @@
-#include "calculator.hpp"
-#include <vector>
-#include <cstring>
-#include <cstdlib>
-#include <stdexcept>
-#include <cmath>
-#include "expression.hpp"
-#include "plus.hpp"
-#include "minus.hpp"
-#include "multiply.hpp"
-#include "divide.hpp"
+#include"calculator.hpp"
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+/*
+ * Calculator by MK
+*/
 
-namespace CalculatorPolish
+bool double_equals( double a, double b, double epsilon )
 {
-
-    double Calculator::calculate(const std::string& expression)
-    {
-        char* exp = new char[expression.length() + nullTerminatorLength];
-        strcpy(exp, expression.c_str());
-        char* token;
-        Expression current;
-        bool firstFilled = false;
-        bool secondFilled = false;
-        while(nullptr != (token = strtok(firstFilled ? nullptr : exp, " ")))
-        {
-            bool num = true;
-            for(int i = firstChar; '\0' != token[i]; ++i)
-            {
-                if((token[i] < '0' || token[i] > '9') && token[i] != '.' && token[i] != '+' && token[i] != '-' )
-                {
-                    num = false;
-                    break;
-                }
-            }
-            if(firstFilled && secondFilled)
-            {
-                switch(token[firstChar])
-                {
-                case '+':
-                    current.setOperation(new Plus());
-                    secondFilled = false;
-                    break;
-                case '-':
-                    current.setOperation(new Minus());
-                    secondFilled = false;
-                    break;
-                case '*':
-                    current.setOperation(new Multiply());
-                    secondFilled = false;
-                    break;
-                case '/':
-                    current.setOperation(new Divide());
-                    secondFilled = false;
-                    break;
-                default:
-                    delete exp;
-                    throw std::invalid_argument("Wrong operand");
-                }
-
-                current.setFirst(current.evaluate());
-                continue;
-            }
-            if(num)
-            {
-                printf("%s\n", token);
-                auto numtok = strtod(token, nullptr);
-                if(!firstFilled)
-                {
-                    current.setFirst(numtok);
-                    firstFilled = true;
-                }
-                else
-                {
-                    current.setSecond(numtok);
-                    secondFilled = true;
-                }
-            }
-            if(!num && !(firstFilled && secondFilled))
-            {
-                delete exp;
-                throw std::invalid_argument("Wrong order");
-            }
-        }
-        if(!firstFilled)
-        {
-            delete exp;
-            throw std::invalid_argument("First argument not number");
-        }
-        if(secondFilled)
-        {
-            delete exp;
-            throw std::invalid_argument("More operands than operations");
-        }
-        delete exp;
-        return current.getResult();
-    }
-
+    return std::abs( a - b ) < epsilon;
 }
+
+std::deque<std::string> split( const std::string& str, char delim )
+{
+    std::deque<std::string> returnContainer;
+    std::stringstream streamFromString ( str );
+    std::string element;
+    while ( std::getline( streamFromString, element, delim ) )
+    {
+        returnContainer.push_back( element );
+    }
+    return returnContainer;
+}
+
+double calculate( const std::string input )
+{
+    auto container = split( input );
+    sOperands operands;
+    double result{ DBL_MAX };
+    while ( ( ! container.empty() ) && ( 2 < container.size() ) )
+    {
+        try
+        {
+            operands = extractItemsForOperation( container );
+        }
+        catch( int i )
+        {
+            return ERROR_CODE;
+        }
+        result = calculate( operands );
+        container.push_front( std::to_string( result ) );
+    }
+    return result;
+}
+
+struct sOperands extractItemsForOperation( std::deque<std::string>& container )
+{
+    sOperands returnOperands;
+    if ( ( ! container.empty() ) && ( 2 < container.size() ) )
+    {
+        try
+        {
+            returnOperands.first = std::stod( container[0] );
+            returnOperands.second = std::stod( container[1] );
+        }
+        catch( std::exception e )
+        {
+            throw -1;
+        }
+        returnOperands.operation = container[2][0];
+        container.pop_front();
+        container.pop_front();
+        container.pop_front();
+    }
+    return returnOperands;
+}
+
+double calculate( const sOperands operands )
+{
+    switch ( operands.operation )
+    {
+    case '+': return plus( operands.first, operands.second );
+    case '-': return minus( operands.first, operands.second );
+    case '*': return multiply( operands.first, operands.second );
+    case '/': return divide( operands.first, operands.second );
+    default: return ERROR_CODE;
+    }
+}
+
+double plus( const double a, const double b )
+{
+    return a + b;
+}
+double minus( const double a, const double b )
+{
+    return a - b;
+}
+double multiply( const double a, const double b )
+{
+    return a * b;
+}
+double divide( const double a, const double b )
+{
+    if ( 0.0 == b )
+    {
+        return ERROR_CODE;
+    }
+    return a / b;
+}
+

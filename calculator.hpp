@@ -1,26 +1,26 @@
-#ifndef CALCULATOR_HPP
-#define CALCULATOR_HPP
+#ifndef CALCULATOR_H
+#define CALCULATOR_H
+#include<string>
+#include <deque>
+#include <cfloat>
 
-#include <string>
+#define ERROR_CODE DBL_MAX
 
-namespace CalculatorPolish
+double calculate(const std::string input);
+std::deque<std::string> split( const std::string& str, char delim = ' ');
+struct sOperands extractItemsForOperation( std::deque<std::string>& container );
+double calculate( const sOperands operands );
+bool double_equals( double a, double b, double epsilon = 0.000001 );
+double plus( const double a, const double b );
+double minus( const double a, const double b );
+double multiply( const double a, const double b );
+double divide( const double a, const double b );
+
+struct sOperands
 {
+    double first;
+    double second;
+    char operation;
+};
 
-    class Calculator
-    {
-    public:
-        /**
-         * @brief calculate expression read from given string
-         * @param expression to calculate
-         * @return value of calculated expression
-         */
-        double calculate(const std::string& expression);
-
-    private:
-        const static int nullTerminatorLength = 1;
-        const static int firstChar = 0;
-    };
-
-}
-
-#endif
+#endif //CALCULATOR_H
