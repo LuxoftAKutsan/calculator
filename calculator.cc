@@ -30,40 +30,44 @@ bool containsAnyLetter(const std::string& str)
     return std::any_of(str.cbegin(), str.cend(), [](char c) { return (::islower(c) || ::isupper(c)); });
 }
 
-bool containsOnlyDigits(const std::string& str)
-{
-    return std::all_of(str.cbegin(), str.cend(), [](char c) { return (::isdigit(c) || c == '-'); });
+bool ContainNumber(const std::string& str) {
+    assert(!str.empty());
+    auto begin = str.cbegin();
+
+    if (*begin == '-') {
+       begin = std::next(begin);
+    }
+    const bool all_digits = std::all_of(begin, str.cend(),::isdigit);
+    return  begin == str.cend() ? false : all_digits;
 }
 
-std::pair<tResultType, double> evalRPN(const std::vector<std::string>& tokens)
+std::pair<tResultType, double> EvaluatePolishNotation(const std::vector<std::string>& tokens)
 {
     std::stack<double> stack;
 
     for (const auto& token : tokens)
     {
+        if (ContainNumber(token)) {
+           stack.push(std::stoi(token));
+           continue;
+        }
         const auto& it = OPERATIONS_MAP.find(token);
-        if (it != OPERATIONS_MAP.end())
-        {
-            if(stack.size() < OPERANDS_MIN_NUM)
-            {
-                return invalidResult();
-            }
-            double rhs = stack.top(); stack.pop();
-            double lhs = stack.top(); stack.pop();
-            if(it->first == "/" && rhs == 0.0)
-            {
-                return invalidResult();
-            }
-            stack.push(it->second(lhs, rhs));
+        if (it != OPERATIONS_MAP.end()) {
+          auto operation = it->second;
+          if(stack. size() < OPERANDS_MIN_NUM)
+          {
+              return invalidResult();
+          }
+          double rhs = stack.top(); stack.pop();
+          double lhs = stack.top(); stack.pop();
+          if(token== "/" && rhs == 0.0)
+          {
+              return invalidResult();
+          }
+          stack.push(it->second(lhs, rhs));
+          continue;
         }
-        else
-        {
-            if(!containsOnlyDigits(token))
-            {
-                return invalidResult();
-            }
-            stack.push(std::stoi(token));
-        }
+        return invalidResult();
     }
 
     assert(!stack.empty());
@@ -80,5 +84,5 @@ std::pair<tResultType,double> calculate(const std::string& evals)
     std::istringstream iss{evals};
     std::vector<std::string> strippedString(std::istream_iterator<std::string>{iss},
                                             std::istream_iterator<std::string>{});
-    return evalRPN(strippedString);
+    return EvaluatePolishNotation(strippedString);
 }
