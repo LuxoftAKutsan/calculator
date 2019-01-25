@@ -27,44 +27,55 @@ const std::unordered_map<std::string, std::function<double(double,double)>> OPER
 
 bool containsAnyLetter(const std::string& str)
 {
-    return std::any_of(str.cbegin(), str.cend(), [](char c) { return (::islower(c) || ::isupper(c)); });
+    assert(!str.empty());
+    return std::any_of(str.cbegin(),
+                       str.cend(),
+                       [](char c) { return ::isalpha(c); });
 }
 
-bool ContainNumber(const std::string& str) {
+bool containsOnlyNumber(const std::string& str)
+{
     assert(!str.empty());
-    auto begin = str.cbegin();
+    auto begin = str.begin();
 
     if (*begin == '-') {
        begin = std::next(begin);
     }
-    const bool all_digits = std::all_of(begin, str.cend(),::isdigit);
-    return  begin == str.cend() ? false : all_digits;
+
+    const bool all_digits = std::all_of(begin, str.end(), ::isdigit);
+    return begin == str.end() ? false : all_digits;
 }
 
-std::pair<tResultType, double> EvaluatePolishNotation(const std::vector<std::string>& tokens)
+std::pair<tResultType, double> evaluatePolishNotation(const std::vector<std::string>& tokens)
 {
     std::stack<double> stack;
 
     for (const auto& token : tokens)
     {
-        if (ContainNumber(token)) {
+        if (containsOnlyNumber(token))
+        {
            stack.push(std::stoi(token));
            continue;
         }
+
         const auto& it = OPERATIONS_MAP.find(token);
-        if (it != OPERATIONS_MAP.end()) {
-          auto operation = it->second;
+        if (it != OPERATIONS_MAP.end())
+        {
+          const auto& operation = it->second;
+
           if(stack. size() < OPERANDS_MIN_NUM)
           {
               return invalidResult();
           }
+
           double rhs = stack.top(); stack.pop();
           double lhs = stack.top(); stack.pop();
-          if(token== "/" && rhs == 0.0)
+
+          if(token == "/" && rhs == 0.0)
           {
               return invalidResult();
           }
-          stack.push(it->second(lhs, rhs));
+          stack.push(operation(lhs, rhs));
           continue;
         }
         return invalidResult();
@@ -84,5 +95,5 @@ std::pair<tResultType,double> calculate(const std::string& evals)
     std::istringstream iss{evals};
     std::vector<std::string> strippedString(std::istream_iterator<std::string>{iss},
                                             std::istream_iterator<std::string>{});
-    return EvaluatePolishNotation(strippedString);
+    return evaluatePolishNotation(strippedString);
 }
