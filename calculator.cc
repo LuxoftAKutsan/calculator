@@ -93,7 +93,7 @@ std::pair<EResult, double> makeAllCalculationCycles(std::vector<std::string>& ve
 
       iterationResult = calculateOperation(stod(vectorList[FIRST_ARGUMENT]),
                                            stod(vectorList[SECOND_ARGUMENT]),
-                                           vectorList[OPERATOR_PLACE]).second;
+                                           vectorList[OPERATOR_PLACE]);
 
       vectorList.erase(vectorList.begin(), vectorList.begin() + SIZE_OF_BLOCK);
 
@@ -107,7 +107,7 @@ std::pair<EResult, double> makeAllCalculationCycles(std::vector<std::string>& ve
 }
 
 
-std::pair<EResult, double> calculateOperation(const double first, const double second, const std::string& element)
+double calculateOperation(const double first, const double second, const std::string& element)
 {
    double result = 0;
 
@@ -131,7 +131,7 @@ std::pair<EResult, double> calculateOperation(const double first, const double s
    {
    }
 
-   return {SUCCESS, result};
+   return result;
 }
 
 std::vector<std::string> parsingStringToVector(const std::string& str_)

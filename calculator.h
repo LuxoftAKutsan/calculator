@@ -35,7 +35,7 @@ const std::string validSigns = "+-*/";
 //public
 std::pair <EResult, double> calculate(const std::string&);
 //privat
-std::pair <EResult, double> calculateOperation(const double first, const double, const std::string&);
+double calculateOperation(const double first, const double, const std::string&);
 std::vector<std::string> parsingStringToVector(const std::string&);
 EResult analyzeStringForMistakes(const std::vector<std::string>&);
 std::pair <EResult, double> makeAllCalculationCycles(std::vector<std::string>&);
